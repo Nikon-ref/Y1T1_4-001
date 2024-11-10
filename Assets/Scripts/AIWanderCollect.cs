@@ -5,11 +5,12 @@ using UnityEngine;
 
 public class AIWanderCollect : MonoBehaviour
 {
-    GameObject[] coins;
-    bool hastarget;
-    float[] distances;
-    GameObject target;
+    GameObject[] coins;//Array to store ALL the coins in the scene
+    bool hastarget;//Bool to indicate if AI currently has a target
+    float[] distances;//store distance betweeen AI and each coin
+    GameObject target;//current coin AI is targeting
     GameObject manager;
+    float movespeed = 10f; //speed ai moves to target
 
     // Start is called before the first frame update
     void Start()
@@ -29,9 +30,9 @@ public class AIWanderCollect : MonoBehaviour
             hastarget = true;//setting target to true, AI now has a target
             target = coins[0];//Sets the first coin in the sorted array (the closest) as the target
         }
-        else
+        else//If AI has a target
         {
-            movetoobject(target);
+            movetoobject(target);//Move AI towards that targ
         }
     }
     void clearnull()
@@ -70,4 +71,12 @@ public class AIWanderCollect : MonoBehaviour
             Destroy(other.gameObject);//Destroyrs the coin the AI collided with
         }
     }
+
+    void movetoobject(GameObject target)
+    {
+        transform.LookAt(target.transform);//Rotate AI to face target
+        this.GetComponent<Rigidbody>().velocity = transform.forward*movespeed*Time.deltaTime;//move AI towards target
+        //this method makes the AI face and movve toward its current target using Rigidbody component
+    }
+    //Bubble sort is the most efficient sorting algorithm. (Consider a different sorting method for larger arrays).
 }
