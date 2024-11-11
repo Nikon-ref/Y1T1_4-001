@@ -5,78 +5,115 @@ using UnityEngine;
 
 public class AIWanderCollect : MonoBehaviour
 {
-    GameObject[] coins;//Array to store ALL the coins in the scene
-    bool hastarget;//Bool to indicate if AI currently has a target
-    float[] distances;//store distance betweeen AI and each coin
-    GameObject target;//current coin AI is targeting
-    GameObject manager;
-    float movespeed = 10f; //speed ai moves to target
+    GameObject[] coins; // Array to store all the coins in the scene
+    bool hastarget; // Bool to indicate if AI currently has a target
+    GameObject target; // Current coin AI is targeting
+    public GameObject coinSpawner; // Reference to CoinSpawner script
+    float movespeed = 5000f;// Speed AI moves to target
 
-    // Start is called before the first frame update
+    private Rigidbody rb; // Reference to Rigidbody component
+
     void Start()
     {
-        coins = manager.GetComponent<managegame>().coins; // Retrieves an array of coin GameObjects from the `managegame` script attached to the `manager`.
-        distances = new float[coins.Length]; // Initializes the distances array with the same length as the `coins` array.
-        hastarget = false; // Indicates that the AI does not have a target at the start.
+        
+        rb = GetComponent<Rigidbody>(); // Get Rigidbody reference
+        if (coinSpawner != null)
+        {
+            coins = coinSpawner.GetComponent<NewBehaviourScript>().GetCoins(); // Retrieve coins array from CoinSpawner
+            hastarget = false; // AI starts without a target
+        }
+        else
+        {
+            Debug.LogError("CoinSpawner reference is not assigned!");
+        }
     }
 
-    // Update is called once per frame
     void Update()
-    {
-        if (!hastarget)//if the AI doesn't have a target
+    { 
+        coins = coinSpawner.GetComponent<NewBehaviourScript>().GetCoins();
+        Debug.Log("AIWanderCollect Update() called."); // Log to confirm Update is running
+
+        if (!hastarget) // If the AI doesn't have a target
         {
-            clearnull();//Removing all null objects from 
-            bubble(coins);//Sorts the "coins" array based on the distance from the AI using a custom bubble sort
-            hastarget = true;//setting target to true, AI now has a target
-            target = coins[0];//Sets the first coin in the sorted array (the closest) as the target
-        }
-        else//If AI has a target
-        {
-            movetoobject(target);//Move AI towards that targ
-        }
-    }
-    void clearnull()
-    {
-        List<GameObject> coinslist = new List<GameObject>();//creating a temporary list to hold non-null coins
-        for (int i = 0; i < coins.Length; i++)//loops through the coins array
-        {
-            if (coins[i] != null)//checks if the current coin is not null
+            clearnull(); // Remove null objects from the coins array
+
+            if (coins.Length > 0)
             {
-                coinslist.Add(coins[i]);//adds the non-null coin to the list
-            }
-        }
-        coins = coinslist.ToArray();//converts the list back to an array and assigns it to "coins"
-    }
-    void bubble(GameObject[] arr)
-    {
-        for (int i = 0; i < arr.Length; i++)//Outer loop iterates through the array
-        {
-            for (int j = 0; j < arr.Length -1; j++)//inner loop for comparing adjacent items
-            {
-                if (Vector3.Distance(arr[j].transform.position, transform.position) > Vector3.Distance(arr[j + 1].transform.position))
+                bubble(coins); // Sorts coins by proximity to AI
+                target = coins[0]; // Set the closest coin as the target
+                hastarget = false; // Only set true if target is valid
+
+                if (target != null)
                 {
-                    GameObject temp = arr[j];//temporary storage for the current element
-                    arr[j] = arr[j + 1];//swapping the current element with the next one
-                    arr[j + 1] = temp;//assigning the current element to the next one
+                    Debug.Log("New Target Acquired: " + target.name);
+                    hastarget = true;
+                }
+                else
+                {
+                    Debug.Log("No target found, all coins may be null.");
                 }
             }
         }
-    }
-    private void OnTriggerEnter(Collider other)
-
-    {
-        if (other.tag == "Finish")//checking if the target he is colliding has "Finish" tag which is on the coin Prefab
+        else
         {
-            hastarget = false;// Resets "hastarget" to indicate the AI needs a new target
-            Destroy(other.gameObject);//Destroyrs the coin the AI collided with
+            movetoobject(target); // Move toward the target
         }
     }
 
+    void clearnull()
+    {
+        List<GameObject> coinslist = new List<GameObject>(); // Temporary list to hold non-null coins
+        for (int i = 0; i < coins.Length; i++)
+        {
+            if (coins[i] != null) // Check if the current coin is not null
+            {
+                coinslist.Add(coins[i]); // Add non-null coins to the list
+            }
+        }
+        coins = coinslist.ToArray(); // Convert the list back to an array
+    }
+
+    void bubble(GameObject[] arr)
+    {
+        for (int i = 0; i < arr.Length; i++)
+        {
+            for (int j = 0; j < arr.Length - 1; j++)
+            {
+                float distA = Vector3.Distance(arr[j].transform.position, transform.position);
+                float distB = Vector3.Distance(arr[j + 1].transform.position, transform.position);
+
+                if (distA > distB)
+                {
+                    GameObject temp = arr[j]; // Swap if current coin is farther
+                    arr[j] = arr[j + 1];
+                    arr[j + 1] = temp;
+                }
+            }
+        }    
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Finish")) // If the AI collides with a coin
+        {
+            hastarget = false; // Reset target and select a new coin
+            Destroy(other.gameObject); // Destroy the coin
+            Debug.Log("Coin Collected: " + other.name);
+        }
+    }
+
+
     void movetoobject(GameObject target)
     {
-        transform.LookAt(target.transform);//Rotate AI to face target
-        this.GetComponent<Rigidbody>().velocity = transform.forward*movespeed*Time.deltaTime;//move AI towards target
-        //this method makes the AI face and movve toward its current target using Rigidbody component
+        // Calculate direction and apply it directly to the Rigidbody's velocity
+        Vector3 direction = (target.transform.position - transform.position).normalized;
+        rb.velocity = direction * movespeed * Time.deltaTime;
+
+        Debug.Log("Current Velocity: " + rb.velocity);
+        Debug.Log("AI Position: " + transform.position + " | Target Position: " + target.transform.position);
+
     }
-    //Bubble sort is the most efficient sorting algorithm. (Consider a different sorting method for larger arrays).
+
 }
+
+

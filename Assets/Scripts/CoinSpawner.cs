@@ -12,10 +12,10 @@ public class NewBehaviourScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+
         coins = new GameObject[totalCoins];
 
-        for(int i = 0; i < coins.Length; i++)
+        for (int i = 0; i < coins.Length; i++)
         {
             coins[i] = coinPrefab;
 
@@ -26,19 +26,16 @@ public class NewBehaviourScript : MonoBehaviour
             int column = i % coinsPerRow;//% = divide
 
             //removed "1" after spacing and replaced with 7.2f because coins would spawn below the plane
-            Vector3 position = new Vector3(column*spacing, 7.2f, row*spacing);
+            Vector3 position = new Vector3(spacing * row, 7.2f, spacing * column);
 
             //instantiate the coins based on the calculated position
-            Instantiate(coins[i], position, Quaternion.identity,this.transform);
+            Instantiate(coins[i], position, Quaternion.identity, this.transform);
 
         }
     }
-    
-        
 
-    // Update is called once per frame
-    void Update()
+    public GameObject[] GetCoins()
     {
-        
+        return coins;
     }
 }
