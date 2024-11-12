@@ -15,7 +15,7 @@ public class AIWanderCollect : MonoBehaviour
 
     void Start()
     {
-        
+        coins = coinSpawner.GetComponent<NewBehaviourScript>().GetCoins();
         rb = GetComponent<Rigidbody>(); // Get Rigidbody reference
         if (coinSpawner != null)
         {
@@ -29,28 +29,21 @@ public class AIWanderCollect : MonoBehaviour
     }
 
     void Update()
-    { 
-        coins = coinSpawner.GetComponent<NewBehaviourScript>().GetCoins();
-        Debug.Log("AIWanderCollect Update() called."); // Log to confirm Update is running
-
-        if (!hastarget) // If the AI doesn't have a target
+    {
+        if (!hastarget && target == null) // If the AI doesn't have a target
         {
+            coins = coinSpawner.GetComponent<NewBehaviourScript>().GetCoins(); // Update coins array
             clearnull(); // Remove null objects from the coins array
 
             if (coins.Length > 0)
             {
                 bubble(coins); // Sorts coins by proximity to AI
                 target = coins[0]; // Set the closest coin as the target
-                hastarget = false; // Only set true if target is valid
 
                 if (target != null)
                 {
+                    hastarget = true; // Set target as valid
                     Debug.Log("New Target Acquired: " + target.name);
-                    hastarget = true;
-                }
-                else
-                {
-                    Debug.Log("No target found, all coins may be null.");
                 }
             }
         }
@@ -62,6 +55,8 @@ public class AIWanderCollect : MonoBehaviour
 
     void clearnull()
     {
+
+        Debug.Log("entering clearnull");
         List<GameObject> coinslist = new List<GameObject>(); // Temporary list to hold non-null coins
         for (int i = 0; i < coins.Length; i++)
         {
@@ -96,9 +91,16 @@ public class AIWanderCollect : MonoBehaviour
     {
         if (other.CompareTag("Finish")) // If the AI collides with a coin
         {
-            hastarget = false; // Reset target and select a new coin
-            Destroy(other.gameObject); // Destroy the coin
-            Debug.Log("Coin Collected: " + other.name);
+            Debug.Log("Coin collected: " + other.name);
+            Destroy(other.gameObject); // Destroy the collected coin
+
+            // Reset target and flag for new target selection
+            target = null;
+            hastarget = false;
+
+            // Update the coins array immediately after collection
+            coins = coinSpawner.GetComponent<NewBehaviourScript>().GetCoins();
+            clearnull();
         }
     }
 
