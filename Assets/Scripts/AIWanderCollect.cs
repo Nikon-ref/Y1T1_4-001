@@ -9,7 +9,8 @@ public class AIWanderCollect : MonoBehaviour
     bool hastarget; // Bool to indicate if AI currently has a target
     GameObject target; // Current coin AI is targeting
     public GameObject coinSpawner; // Reference to CoinSpawner script
-    float movespeed = 5000f;// Speed AI moves to target
+    public float movespeed = 5000f;// Speed AI moves to target
+    public GameObject aud;
 
     private Rigidbody rb; // Reference to Rigidbody component
 
@@ -101,6 +102,8 @@ public class AIWanderCollect : MonoBehaviour
             // Update the coins array immediately after collection
             coins = coinSpawner.GetComponent<NewBehaviourScript>().GetCoins();
             clearnull();
+
+            aud.GetComponent<audmanager>().PlayPacManEatSound();
         }
     }
 

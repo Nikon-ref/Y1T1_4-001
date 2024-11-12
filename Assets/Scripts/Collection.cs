@@ -12,7 +12,7 @@ public class Collection : MonoBehaviour
         spawner = GameObject.FindGameObjectWithTag("Spawner");
     }
 
-    private void OnCollisionEnter(Collision collision)
+    private void OnCollisionEnter(Collision collision) //Use trigger if you want the player to be able to collect the coins
     {
         //if the player collides with a coin the coind will destroy and the scoreboard on the console will update
         if (collision.gameObject.CompareTag("Player"))
