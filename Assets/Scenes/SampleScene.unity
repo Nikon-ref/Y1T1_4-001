@@ -754,6 +754,7 @@ GameObject:
   - component: {fileID: 1272124187}
   - component: {fileID: 1272124186}
   - component: {fileID: 1272124185}
+  - component: {fileID: 1272124190}
   m_Layer: 0
   m_Name: AiChaser
   m_TagString: Untagged
@@ -768,11 +769,14 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1272124184}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c8fc9778ad3d83043860180b09685810, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  EnemyAi: {fileID: 752327707}
+  xRange: {x: -90, y: 100}
+  zRange: {x: -105, y: 80}
 --- !u!135 &1272124186
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -853,12 +857,39 @@ Transform:
   m_GameObject: {fileID: 1272124184}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 50.3, y: 5.2, z: -20.27}
+  m_LocalPosition: {x: 4.4, y: 5.2, z: -26.2}
   m_LocalScale: {x: 3.3246, y: 3.3246, z: 3.3246}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!54 &1272124190
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1272124184}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &1370758306
 GameObject:
   m_ObjectHideFlags: 0
