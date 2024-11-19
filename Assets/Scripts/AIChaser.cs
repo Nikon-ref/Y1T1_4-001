@@ -7,7 +7,8 @@ public class AIChaser : MonoBehaviour
     Vector3 location;
     float speed = 30f; // Speed of movement
     private Rigidbody rb;
-    public GameObject EnemyAi; // Target to chase
+    private GameObject[] aiCollectors; // Array of all AICollector objects
+    private GameObject currentTarget; // Current target AICollector
 
     private enum AiChaserStates
     {
@@ -30,6 +31,7 @@ public class AIChaser : MonoBehaviour
 
     void FixedUpdate() // Use FixedUpdate for physics-based movement
     {
+        UpdateClosestTarget(); // Update the closest target at the start of each FixedUpdate
         switch (currentState)
         {
             case AiChaserStates.StateRoaming:
@@ -70,7 +72,7 @@ public class AIChaser : MonoBehaviour
         {
             SetRandomRoamingLocation(); // Set a new random location
         }
-        else if (EnemyAi != null && Vector3.Distance(transform.position, EnemyAi.transform.position) < 30f)
+        else if (currentTarget != null && Vector3.Distance(transform.position, currentTarget.transform.position) < 30f)
         {
             currentState = AiChaserStates.StateChasing;
         }
@@ -79,14 +81,14 @@ public class AIChaser : MonoBehaviour
     void ChasingBehavior()
     {
         Debug.Log("Currently chasing");
-        if (EnemyAi != null)
+        if (currentTarget != null)
         {
-            Vector3 direction = (EnemyAi.transform.position - transform.position).normalized;
+            Vector3 direction = (currentTarget.transform.position - transform.position).normalized;
             Vector3 newPosition = transform.position + direction * speed * Time.fixedDeltaTime;
             rb.MovePosition(newPosition);
 
             // Transition to attacking if close enough to the target
-            if (Vector3.Distance(transform.position, EnemyAi.transform.position) < 1.5f)
+            if (Vector3.Distance(transform.position, currentTarget.transform.position) < 1.5f)
             {
                 currentState = AiChaserStates.StateAttacking;
             }
@@ -103,9 +105,34 @@ public class AIChaser : MonoBehaviour
         rb.velocity = Vector3.zero; // Stop movement during attack
 
         // Example logic: Return to chasing if target moves out of range
-        if (EnemyAi != null && Vector3.Distance(transform.position, EnemyAi.transform.position) > 2f)
+        if (currentTarget != null && Vector3.Distance(transform.position, currentTarget.transform.position) > 2f)
         {
             currentState = AiChaserStates.StateChasing;
         }
     }
+
+    void UpdateClosestTarget()
+    {
+        aiCollectors = GameObject.FindGameObjectsWithTag("Player"); // Refresh the list of AICollectors
+
+        float closestDistance = Mathf.Infinity; // Start with a very large distance
+        GameObject closestCollector = null;
+
+        foreach (GameObject collector in aiCollectors)
+        {
+            if (collector != null) // Ensure the collector is valid
+            {
+                float distance = Vector3.Distance(transform.position, collector.transform.position);
+
+                if (distance < closestDistance) // Check if this collector is closer
+                {
+                    closestDistance = distance;
+                    closestCollector = collector;
+                }
+            }
+        }
+
+        currentTarget = closestCollector; // Update the current target
+    }
 }
+
