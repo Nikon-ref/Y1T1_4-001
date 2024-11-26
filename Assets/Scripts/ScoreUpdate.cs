@@ -18,7 +18,7 @@ public class ScoreUpdate : MonoBehaviour
         //if statement to display on the console that if the prefab count from the spawner is 0 or less you will win the game and exit playmode
         if (this.transform.childCount <=0)
         {
-            Debug.Log("You Win!");
+            Debug.Log("You Lose!");
             EditorApplication.ExitPlaymode();
         } else
         {

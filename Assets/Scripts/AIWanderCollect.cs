@@ -1,7 +1,7 @@
-using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class AIWanderCollect : MonoBehaviour
 {
@@ -9,19 +9,30 @@ public class AIWanderCollect : MonoBehaviour
     bool hastarget; // Bool to indicate if AI currently has a target
     GameObject target; // Current coin AI is targeting
     public GameObject coinSpawner; // Reference to CoinSpawner script
-    public float movespeed = 5000f;// Speed AI moves to target
+    public float movespeed = 5f; // Speed AI moves to target
     public GameObject aud;
 
-    private Rigidbody rb; // Reference to Rigidbody component
+    private NavMeshAgent navAgent; // Reference to NavMeshAgent component
 
     void Start()
     {
-        coins = coinSpawner.GetComponent<NewBehaviourScript>().GetCoins();
-        rb = GetComponent<Rigidbody>(); // Get Rigidbody reference
+        // Initialize NavMeshAgent
+        navAgent = GetComponent<NavMeshAgent>();
+        navAgent.speed = movespeed;
+        navAgent.stoppingDistance = 0.75f; // Small stopping distance for precise targeting
+        navAgent.autoBraking = true;
+
+        // Disable physics movement
+        Rigidbody rb = GetComponent<Rigidbody>();
+        if (rb)
+        {
+            rb.isKinematic = true; // Disable physics control
+        }
+
         if (coinSpawner != null)
         {
-            coins = coinSpawner.GetComponent<NewBehaviourScript>().GetCoins(); // Retrieve coins array from CoinSpawner
-            hastarget = false; // AI starts without a target
+            coins = coinSpawner.GetComponent<NewBehaviourScript>().GetCoins();
+            hastarget = false;
         }
         else
         {
@@ -38,35 +49,41 @@ public class AIWanderCollect : MonoBehaviour
 
             if (coins.Length > 0)
             {
-                bubble(coins); // Sorts coins by proximity to AI
-                target = coins[0]; // Set the closest coin as the target
+                bubble(coins); // Sort coins by proximity
+                target = coins[0]; // Choose the closest coin
 
                 if (target != null)
                 {
-                    hastarget = true; // Set target as valid
+                    hastarget = true; // Mark as having a valid target
+                    navAgent.SetDestination(GetNavMeshTarget(target)); // Navigate to the coin
                     Debug.Log("New Target Acquired: " + target.name);
                 }
             }
         }
-        else
+        else if (target != null && !navAgent.pathPending)
         {
-            movetoobject(target); // Move toward the target
+            if (navAgent.remainingDistance <= navAgent.stoppingDistance)
+            {
+                // Stop if the AI reaches the coin
+                target = null;
+                hastarget = false;
+                Debug.Log("Target Reached");
+            }
         }
     }
 
     void clearnull()
     {
-
         Debug.Log("entering clearnull");
-        List<GameObject> coinslist = new List<GameObject>(); // Temporary list to hold non-null coins
-        for (int i = 0; i < coins.Length; i++)
+        List<GameObject> coinslist = new List<GameObject>();
+        foreach (GameObject coin in coins)
         {
-            if (coins[i] != null) // Check if the current coin is not null
+            if (coin != null) // Only keep valid coins
             {
-                coinslist.Add(coins[i]); // Add non-null coins to the list
+                coinslist.Add(coin);
             }
         }
-        coins = coinslist.ToArray(); // Convert the list back to an array
+        coins = coinslist.ToArray(); // Convert back to array
     }
 
     void bubble(GameObject[] arr)
@@ -80,45 +97,45 @@ public class AIWanderCollect : MonoBehaviour
 
                 if (distA > distB)
                 {
-                    GameObject temp = arr[j]; // Swap if current coin is farther
+                    GameObject temp = arr[j];
                     arr[j] = arr[j + 1];
                     arr[j + 1] = temp;
                 }
             }
-        }    
+        }
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Finish")) // If the AI collides with a coin
+        if (other.CompareTag("Finish")) // Detect coin collection
         {
             Debug.Log("Coin collected: " + other.name);
-            Destroy(other.gameObject); // Destroy the collected coin
+            Destroy(other.gameObject);
 
-            // Reset target and flag for new target selection
+            // Reset target
             target = null;
             hastarget = false;
 
-            // Update the coins array immediately after collection
+            // Update coin array
             coins = coinSpawner.GetComponent<NewBehaviourScript>().GetCoins();
             clearnull();
 
+            // Play collection sound
             aud.GetComponent<audmanager>().PlayPacManEatSound();
         }
     }
 
-
-    void movetoobject(GameObject target)
+    private Vector3 GetNavMeshTarget(GameObject coin)
     {
-        // Calculate direction and apply it directly to the Rigidbody's velocity
-        Vector3 direction = (target.transform.position - transform.position).normalized;
-        rb.velocity = direction * movespeed * Time.deltaTime;
-
-        Debug.Log("Current Velocity: " + rb.velocity);
-        Debug.Log("AI Position: " + transform.position + " | Target Position: " + target.transform.position);
-
+        NavMeshHit hit;
+        if (NavMesh.SamplePosition(coin.transform.position, out hit, 1.0f, NavMesh.AllAreas))
+        {
+            return hit.position; // Get the closest point on the NavMesh
+        }
+        else
+        {
+            Debug.LogWarning("Coin is not on NavMesh: " + coin.name);
+            return coin.transform.position; // Use the coin position as fallback
+        }
     }
-
 }
-
-
