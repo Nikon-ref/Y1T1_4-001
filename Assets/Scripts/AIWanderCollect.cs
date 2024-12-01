@@ -5,12 +5,12 @@ using UnityEngine.AI;
 
 public class AIWanderCollect : MonoBehaviour
 {
-    GameObject[] coins; // Array to store all the coins in the scene
-    bool hastarget; // Bool to indicate if AI currently has a target
-    GameObject target; // Current coin AI is targeting
-    public GameObject coinSpawner; // Reference to CoinSpawner script
-    public float movespeed = 5f; // Speed AI moves to target
-    public GameObject aud;
+    GameObject[] coins; // Array to store all the coins in the scene //USE OTHER SCRIPT "AiWanderCollection"//USE OTHER SCRIPT "AiWanderCollection"//USE OTHER SCRIPT "AiWanderCollection"
+    bool hastarget; // Bool to indicate if AI currently has a target //USE OTHER SCRIPT "AiWanderCollection"//USE OTHER SCRIPT "AiWanderCollection"//USE OTHER SCRIPT "AiWanderCollection"
+    GameObject target; // Current coin AI is targeting //USE OTHER SCRIPT "AiWanderCollection"//USE OTHER SCRIPT "AiWanderCollection"//USE OTHER SCRIPT "AiWanderCollection"
+    public GameObject coinSpawner; // Reference to CoinSpawner script //USE OTHER SCRIPT "AiWanderCollection"//USE OTHER SCRIPT "AiWanderCollection"//USE OTHER SCRIPT "AiWanderCollection"
+    public float movespeed = 5f; // Speed AI moves to target //USE OTHER SCRIPT "AiWanderCollection"//USE OTHER SCRIPT "AiWanderCollection"//USE OTHER SCRIPT "AiWanderCollection"
+    public GameObject aud; //USE OTHER SCRIPT "AiWanderCollection"//USE OTHER SCRIPT "AiWanderCollection"//USE OTHER SCRIPT "AiWanderCollection"
 
     private NavMeshAgent navAgent; // Reference to NavMeshAgent component
 
