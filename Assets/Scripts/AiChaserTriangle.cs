@@ -6,9 +6,9 @@ using UnityEngine.AI;
 public class AIChaser : MonoBehaviour
 {
     // Roaming points (hardcoded coordinates handpicked)
-    private readonly Vector3 pointA = new Vector3(43.86f, 5.4823f, -85.52f);
-    private readonly Vector3 pointB = new Vector3(-17.86f, 5.4823f, 19.74f);
-    private readonly Vector3 pointC = new Vector3(92.3f, 5.4823f, 82.02f);
+    private readonly Vector3 pointA = new Vector3(43.5f, 10.5f, -43.5f);
+    private readonly Vector3 pointB = new Vector3(-14.5f, 10.5f, 19.5f);
+    private readonly Vector3 pointC = new Vector3(92.5f, 10.5f, 82.5f);
 
     public float roamingSpeed = 3.5f; // Speed while roaming
     public float chasingSpeed = 5.5f; // Speed while chasing

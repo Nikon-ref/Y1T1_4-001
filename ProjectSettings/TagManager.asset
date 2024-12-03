@@ -7,6 +7,8 @@ TagManager:
   - Spawner
   - MainPlayer
   - Target
+  - Turret
+  - WorldObjectHolder
   layers:
   - Default
   - TransparentFX
@@ -15,10 +17,10 @@ TagManager:
   - Water
   - UI
   - Wall
-  - 
-  - 
-  - 
-  - 
+  - Turret
+  - Player
+  - PlayerBullet
+  - TurretBullet
   - 
   - 
   - 
